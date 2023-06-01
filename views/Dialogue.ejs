@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dialogue</title>
+  <%- include('./partials/bootstrap') %>
+  <!-- Fontawsome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-light">
+  <%- include('./partials/nav') %>
+  <div class="d-flex flex-column text-center  mb-5">
+    <h1><span class="text-success text-capitalize"> Bienvenu <%= user.pseudo %> </h1>
+      <div>
+        <a href="/message/new" class="btn btn-primary mt-2">Nouveau Message</a>
+      </div>
+    <div>
+    <hr>
+  </div>
+
+  <div class="d-flex col-12">
+    <!-- Contact -->
+    <div class=" col-2 ">
+      <h2 class="text-center ">contacts</h2>
+     <div>
+      <% var contacts = [...new Set(ContactsMsg.map(message => message.expediteur))];   %>
+          <% contacts.forEach(contact => { %>
+        
+          <a class="text-decoration-none fs-3 text-success" href="/userpage/<%= contact %>"><%= contact %><br></a>
+        <% }); %>
+      </div>  
+    </div>
+    <!-- Discussion -->
+   <div class="mt-5 col-6 bg-primary-subtle m-auto rounded-5">
+    <h1 class="m-4 text-start text-capitalize "> <%= pseudo %></h1>
+    <hr>
+ <!-- filtrer les message par date d'envoi -->
+    <% AfficheMsg.forEach(message => { %>
+      <!-- LES messages reçus -->
+      <% if (message.expediteur === pseudo) { %>
+        <div class=" ms-5 me-3 card mb-3 w-50 bg-light ps-3  text-start rounded-4 ">
+          
+          <p class=" text-start text-capitalize text-info "><%= pseudo %></p>
+            <p class="card-text "><%= message.message %></p>
+        </div>
+        <p class="card-text text-muted"><%= message.datetime %></p>
+      
+      <!-- Les messages envoyes -->
+      <% } else if (message.destinataire === pseudo) { %>
+        <div class="d-flex  justify-content-end">
+        <div class="card mx-3 mb-3 w-50 px-5 text-start bg-light rounded-4">
+          <p class=" text-start text-capitalize text-info "><%= message.expediteur %></p>
+            <p class="card-text"><%= message.message %></p>
+        </div>
+      </div>
+      <p class="card-text text-muted"><%= message.datetime %></p>
+      <% } %>
+    <% }) %>
+  <!-- Envoyer un message -->
+    <form method="post" action="/message">
+      <div class="mb-3 mx-4">
+        <textarea class="form-control  " name="message" rows="5" required></textarea>
+      </div>
+      <input type="hidden" name="destinataire" value="<%= pseudo %>">
+
+      <input type="hidden" name="datetime" value="<%= heure %>">
+      <button type="submit" class="btn btn-primary">Répondre</button>
+    </form>
+  </div>
+
+  <script>
+    function getCurrentDateTime() {
+      var currentDateTime = new Date();
+      return currentDateTime.toISOString();
+    }
+  </script>
+  </body>
+  </html>
